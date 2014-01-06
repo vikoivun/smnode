@@ -1,0 +1,17 @@
+# IP of the master node
+db_master_ip: 192.168.107.2
+# IP of the standby node
+db_standby_ip: 192.168.107.3
+# Hostname of the master (used for PostgreSQL-authentication)
+master_hostname: 192.168.107.2
+# Port the standby-nodes should connect to on the master
+master_port: 5432
+
+# PostgreSQL data directory on the master and standby nodes
+# Should be one level up from the actual directory
+postgresql_data_dir: /var/lib/postgresql/9.1
+postgresql_config_dir: /etc/postgresql/9.1/main
+
+# User and password used for PostgreSQL-replication
+pg_replication_user: sm_replication
+pg_replication_password: Gdw9PfxZ6qMjGtd8kNCH

@@ -1,0 +1,3 @@
+- name: "Create system user for Service Map frontend"
+  sudo: True
+  user: name=smbackend comment="Service Map system user" system=yes

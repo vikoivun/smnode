@@ -1,0 +1,26 @@
+---
+- hosts: all
+  gather_facts: no
+  sudo: yes
+  vars_files:
+  - vars.yml
+  roles:
+  - common
+
+- hosts: sm_master
+  gather_facts: no
+  sudo: no
+  vars_files:
+  - vars.yml
+  roles:
+  - dbmaster
+  - servicemap
+
+- hosts: sm_standbys
+  gather_facts: no
+  sudo: no
+  vars_files:
+  - vars.yml
+  roles:
+  - dbstandby
+  - servicemap

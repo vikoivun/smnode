@@ -1,0 +1,15 @@
+- name: PostgreSQL-master | Main configuration for replication master
+  sudo: yes
+  sudo_user: postgres
+  copy: src=postgresql.conf dest={{ postgresql_config_dir }}
+- name: PostgreSQL-master | Access configuration for replication master
+  sudo: yes
+  sudo_user: postgres
+  template: src=pg_hba.conf.j2 dest={{ postgresql_config_dir }}/pg_hba.conf mode=0400
+- name: PostgreSQL-master | Restart PostgreSQL
+  sudo: yes
+  service: name=postgresql state=restarted
+- name: PostgreSQL | Create replication user
+  sudo_user: postgres
+  sudo: yes
+  postgresql_user: name={{ pg_replication_user }} encrypted=no password={{ pg_replication_password }} role_attr_flags=REPLICATION state=present

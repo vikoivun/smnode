@@ -1,0 +1,21 @@
+Automated setup for Service Map nodes
+=====================================
+This repository contains Ansible-scripts for automatically setting up nodes
+for Hel Service Map. A Vagrantfile is included for testing in local virtual
+machines.
+
+Current version sets up replication between two PostgreSQL-instances,
+one serving as master and other as a standby. Testing has only been done on
+Ubuntu.
+
+Directory /deployment contains the actual ansible scripts (playbook).
+Notable files:
+production:	ansible inventory, needs to be customized for the used hosts
+vars.yml:	configuration for the scripts, currently IPs defined in
+		inventory need to be set here as well
+
+Additionally SSH access (preferably passwordless) and sudo functionality
+for the user with SSH access must be available.
+
+The playbook can be run with:
+ansible-playbook -i production -u {remote_username}
