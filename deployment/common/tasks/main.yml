@@ -13,3 +13,4 @@
   - postgresql
 # Ansible requires this, thus it is always needed
   - python-psycopg2
+  - unattended-upgrades
