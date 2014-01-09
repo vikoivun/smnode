@@ -19,3 +19,14 @@ for the user with SSH access must be available.
 
 The playbook can be run with:
 ansible-playbook -i production -u {remote_username}
+
+Testing with vagrant
+----
+For testing Vagrant and Virtualbox are required. Any other Vagrant-supported
+virtualization provider might work as well.
+
+Starting a master-standby pair:
+vagrant up
+
+Testing provision on both or either end:
+vagrant provision [master|standby]
