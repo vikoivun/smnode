@@ -1,34 +1,6 @@
-- name: PostgreSQL-standby | Copy passfile to standby server
-  sudo: yes
-  sudo_user: postgres
-  template: src=pgpass.j2 dest={{ postgresql_data_dir }}/../.pgpass mode=0400
-- name: PostgreSQL-standby | Sync data from master server
-  sudo: yes
-  sudo_user: postgres
-  shell: pg_basebackup -D {{ postgresql_data_dir }}/new_main -h {{ master_hostname }} -U {{ pg_replication_user }} -w
-- name: PostgreSQL-standby | Stop server for replication configuration
-  sudo: yes
-  service: name=postgresql state=stopped
-- name: PostgreSQL-standby | Move current data directory out of way
-  sudo: yes
-  sudo_user: postgres
-  shell: mv {{ postgresql_data_dir }}/main {{ postgresql_data_dir }}/old_main
-- name: PostgreSQL-standby | Move restored data to place
-  sudo: yes
-  sudo_user: postgres
-  shell: mv {{postgresql_data_dir}}/new_main {{postgresql_data_dir}}/main
-- name: PostgreSQL-standby | restore SSL-certificates to data directory
-  sudo: yes
-  sudo_user: postgres
-  shell: cp -a {{postgresql_data_dir}}/old_main/server.* {{postgresql_data_dir}}/main/
-- name: PostgreSQL-standby | Main configuration for standby node
-  sudo: yes
-  sudo_user: postgres
-  copy: src=postgresql.conf dest={{ postgresql_config_dir }}
-- name: PostgreSQL-standby | Recovery configuration for standby node
-  sudo: yes
-  sudo_user: postgres
-  template: src=recovery.conf.j2 dest={{ postgresql_data_dir }}/main/recovery.conf
-- name: PostgreSQL-standby | Server restart
-  sudo: yes
-  service: name=postgresql state=started
+- name: PostgreSQL-standby | Test whether replication is already setup
+  command: psql -x -c 'SELECT pg_is_in_recovery()'
+  register: replication_running
+- debug: var=replication_running
+- include: setup_replication.yml
+  when: replication_running.stdout.find('pg_is_in_recovery | t') == -1

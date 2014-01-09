@@ -1,0 +1,22 @@
+- name: PostgreSQL-standby | Copy passfile to standby server
+  template: src=pgpass.j2 dest={{ postgresql_data_dir }}/../.pgpass mode=0400
+- name: PostgreSQL-standby | Sync data from master server
+  shell: pg_basebackup -D {{ postgresql_data_dir }}/new_main -h {{ master_hostname }} -U {{ pg_replication_user }} -w
+- name: PostgreSQL-standby | Stop server for replication configuration
+  sudo_user: root
+  service: name=postgresql state=stopped
+- name: PostgreSQL-standby | Remove any old data directory backups
+  command: /bin/rm -r {{ postgresql_data_dir }}/old_main removes={{postgresql_data_dir}}/old_main
+- name: PostgreSQL-standby | Move current data directory out of way
+  shell: mv {{ postgresql_data_dir }}/main {{ postgresql_data_dir }}/old_main
+- name: PostgreSQL-standby | Move restored data to place
+  shell: mv {{postgresql_data_dir}}/new_main {{postgresql_data_dir}}/main
+- name: PostgreSQL-standby | restore SSL-certificates to data directory
+  shell: cp -a {{postgresql_data_dir}}/old_main/server.* {{postgresql_data_dir}}/main/
+- name: PostgreSQL-standby | Main configuration for standby node
+  copy: src=postgresql.conf dest={{ postgresql_config_dir }}
+- name: PostgreSQL-standby | Recovery configuration for standby node
+  template: src=recovery.conf.j2 dest={{ postgresql_data_dir }}/main/recovery.conf
+- name: PostgreSQL-standby | Server restart
+  sudo_user: root
+  service: name=postgresql state=started
