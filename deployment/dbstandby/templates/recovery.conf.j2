@@ -2,3 +2,6 @@
 # {{ansible_managed}}
 standby_mode = 'on'
 primary_conninfo = 'host={{ db_master_ip }} user={{ pg_replication_user }} password={{ pg_replication_password }}'
+# TODO: use this to enable SSL, requires CA-setup, or perhaps just startssl?
+#primary_conninfo = 'host={{ db_master_ip }} user={{ pg_replication_user }} password={{ pg_replication_password }} sslmode=verify-ca'
+
