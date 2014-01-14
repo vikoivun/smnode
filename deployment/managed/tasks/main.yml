@@ -1,0 +1,23 @@
+- name: test for remote access and root access
+  sudo: yes
+  sudo_user: root
+  command: /bin/true
+- name: create deployment account
+  user: name=deployment comment="Ansible-management" system=yes state=present
+- name: copy in SSH public key to deployment account
+  authorized_key: user=deployment
+                  key="{{ lookup('file', 'id_deployment.pub') }}"
+                  state=present
+- name: configure sudo for deployment account
+  template: src=deployment-sudo.j2
+            dest=/etc/sudoers.d/deployment
+            mode=0440
+            owner=root
+            group=root
+- name: check for enabled root account
+  shell: passwd -S root | grep -o '^[a-z\]* S'
+  register: root_account_state
+  ignore_errors: True
+- name: disable root account
+  command: /bin/false
+  when: root_account_state|success

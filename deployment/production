@@ -1,5 +1,7 @@
-[sm_masters]
-192.168.107.2
+[sm_master]
+# Example for specifying management accounts per host
+#alku.hel.fi ansible_ssh_user=deployment
+master
 
 [sm_standbys]
-192.168.107.3
+standby

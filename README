@@ -14,11 +14,35 @@ production:	ansible inventory, needs to be customized for the used hosts
 vars.yml:	configuration for the scripts, currently IPs defined in
 		inventory need to be set here as well
 
-Additionally SSH access (preferably passwordless) and sudo functionality
-for the user with SSH access must be available.
+Initial use
+----
+Hosts that are going to be managed need to have, at minimum, SSH-server
+running and either direct root access or access to a user with sudo access
+to every user.
 
+The initialization playbook provides two services:
+-copy over an SSH public key
+-set up a passwordless sudo for the management account
+
+For the first run, you likely need to specify remote user on the command
+line and activate the asking for passwords:
+
+ansible-playbook -i production -u {remote_username} --ask-pass --ask-sudo-pass
+
+Remote usernames can also be configured in the inventory file. See the
+supplied inventory for examples
+
+If you need to use different passwords for hosts, it is easiest to set
+them up on separate runs with separate inventory files
+
+[sm_master]
+alku.hel.fi remote_user=deployment
+
+Daily use
+---
 The playbook can be run with:
 ansible-playbook -i production -u {remote_username}
+
 
 Testing with vagrant
 ----
