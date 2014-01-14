@@ -9,7 +9,7 @@
 
 - hosts: sm_master
   gather_facts: no
-  sudo: no
+  sudo: yes
   vars_files:
   - vars.yml
   roles:
@@ -19,7 +19,6 @@
 - hosts: sm_standbys
   gather_facts: no
   sudo: yes
-  sudo_user: postgres
   vars_files:
   - vars.yml
   roles:
