@@ -18,3 +18,7 @@ postgresql_config_dir: /etc/postgresql/9.1/main
 # User and password used for PostgreSQL-replication
 pg_replication_user: sm_replication
 pg_replication_password: Gdw9PfxZ6qMjGtd8kNCH
+
+# Geoserver-version to install, sha256 verifies the file
+geoserver_version: 2.4.3
+geoserver_sha256: 93aa5669eda64fe5246771d85cf3962a781479d39028b63f9d39eff49ac69621

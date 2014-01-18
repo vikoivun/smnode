@@ -15,6 +15,7 @@
   - vars.yml
   roles:
   - dbmaster
+  - geoserver
   - servicemap
 
 - hosts: sm_standbys
@@ -24,4 +25,5 @@
   - vars.yml
   roles:
   - dbstandby
+  - geoserver
   - servicemap
