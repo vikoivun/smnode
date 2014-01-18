@@ -6,6 +6,7 @@
   - vars.yml
   roles:
   - common
+  - oracle-java
 
 - hosts: sm_master
   gather_facts: no
