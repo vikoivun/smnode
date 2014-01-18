@@ -13,6 +13,8 @@ Notable files:
 production:	ansible inventory, needs to be customized for the used hosts
 vars.yml:	configuration for the scripts, currently IPs defined in
 		inventory need to be set here as well
+initial.yml	playbook: sets the hosts up for management
+site.yml	playbook: sets up the actual services for Service Map
 
 Initial use
 ----
@@ -20,36 +22,44 @@ Hosts that are going to be managed need to have, at minimum, SSH-server
 running and either direct root access or access to a user with sudo access
 to every user.
 
+The initial configuration can fail in such a way, that the hosts are now
+longer accessible remotely. Thus it has been split into a separate playbook.
+
 The initialization playbook provides two services:
 -copy over an SSH public key
 -set up a passwordless sudo for the management account
 
-For the first run, you likely need to specify remote user on the command
-line and activate the asking for passwords:
+The playbook expects the SSH-key to be in a file called:
+deployment/private/id_deployment
 
-ansible-playbook -i production -u {remote_username} --ask-pass --ask-sudo-pass
+As the SSH-key is not yet installed ansible needs to be told to use
+passwords:
+ansible-playbook -i production -u {remote_username} --ask-pass --ask-sudo-pass initial.yml
 
 Remote usernames can also be configured in the inventory file. See the
-supplied inventory for examples
+supplied inventory for example
 
 If you need to use different passwords for hosts, it is easiest to set
 them up on separate runs with separate inventory files
 
-[sm_master]
-alku.hel.fi remote_user=deployment
-
 Daily use
----
-The playbook can be run with:
-ansible-playbook -i production -u {remote_username}
+----
+For daily use, the SSH-key should be used for authentication. On a typical
+Debian or Ubuntu installation this is done with:
+ssh-add deployment/private/id_deployment
 
+This adds the key to the ssh-agent and no passwords are needed for
+SSH-connections thereafter.
+
+The playbook can then be run with:
+ansible-playbook -i production -u {remote_username} site.yml
 
 Testing with vagrant
 ----
 For testing Vagrant and Virtualbox are required. Any other Vagrant-supported
 virtualization provider might work as well.
 
-Starting a master-standby pair:
+Starting a master-standby pair (this also runs Ansible provisioning):
 vagrant up
 
 Testing provision on both or either end:
