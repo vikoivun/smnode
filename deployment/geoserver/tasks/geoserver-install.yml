@@ -1,0 +1,14 @@
+- name: Extracting the downloaded Geoserver
+  command: unzip geoserver-{{ geoserver_version }}-war.zip geoserver.war -d /home/{{ deployment_user }}/geoserver_extract
+           creates=/home/{{ deployment_user }}/geoserver_extract/geoserver.war
+           chdir=/home/{{ deployment_user }}
+
+- name: Moving Geoserver WAR into Tomcat webapps-directory
+  command: mv geoserver.war /var/lib/tomcat7/webapps
+           chdir=/home/{{ deployment_user }}/geoserver_extract
+
+- name: Remove the temporary directory
+  command: rm -r /home/{{ deployment_user }}/geoserver_extract
+
+- name: Restarting Tomcat to make it aware of Geoserver
+  service: name=tomcat7 state=restarted
