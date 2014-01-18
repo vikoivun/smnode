@@ -1,6 +1,6 @@
 ---
 - name: Installing necessary packages (Tomcat7 and unzip)
-  apt: pkg={{item}} state=present update-cache=yes cache_valid_time=86400
+  apt: pkg={{ item }} state=present update-cache=yes cache_valid_time=86400
   with_items:
   - tomcat7
   - unzip
@@ -8,19 +8,22 @@
 # Destination includes the filename as this causes Ansible to re-downloaded
 # only if necessary
 - name: Downloading Geoserver version {{ geoserver_version }}
-  get_url: url=http://sourceforge.net/projects/geoserver/files/GeoServer/{{ geoserver_version }}/geoserver-{{ geoserver_version }}-war.zip dest=/home/{{deployment_user}}/geoserver-{{ geoserver_version }}-war.zip mode=0440
+  get_url: url=http://sourceforge.net/projects/geoserver/files/GeoServer/{{ geoserver_version }}/geoserver-{{ geoserver_version }}-war.zip
+           dest=/home/{{ deployment_user }}/geoserver-{{ geoserver_version }}-war.zip
+           sha256sum={{ geoserver_sha256 }}
+           mode=0440
 
 - name: Extracting the downloaded Geoserver
-  command: unzip geoserver-{{geoserver_version}}-war.zip geoserver.war -d /home/{{deployment_user}}/geoserver_extract
-           creates=/home/{{deployment_user}}/geoserver_extract/geoserver.war
-           chdir=/home/{{deployment_user}}
+  command: unzip geoserver-{{ geoserver_version }}-war.zip geoserver.war -d /home/{{ deployment_user }}/geoserver_extract
+           creates=/home/{{ deployment_user }}/geoserver_extract/geoserver.war
+           chdir=/home/{{ deployment_user }}
 
 - name: Moving Geoserver WAR into Tomcat webapps-directory
   command: mv geoserver.war /var/lib/tomcat7/webapps
-           chdir=/home/{{deployment_user}}/geoserver_extract
+           chdir=/home/{{ deployment_user }}/geoserver_extract
 
 - name: Remove the temporary directory
-  command: rm -r /home/{{deployment_user}}/geoserver_extract
+  command: rm -r /home/{{ deployment_user }}/geoserver_extract
 
 - name: Restarting Tomcat to make it aware of Geoserver
   service: name=tomcat7 state=restarted
