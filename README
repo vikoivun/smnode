@@ -22,8 +22,8 @@ Hosts that are going to be managed need to have, at minimum, SSH-server
 running and either direct root access or access to a user with sudo access
 to every user.
 
-The initial configuration can fail in such a way, that the hosts are now
-longer accessible remotely. Thus it has been split into a separate playbook.
+If the initial configurations fails, it can leave the hosts inaccessible
+remotely. Thus it has been split into a separate playbook.
 
 The initialization playbook provides two services:
 -copy over an SSH public key
