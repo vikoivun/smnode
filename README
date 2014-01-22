@@ -29,15 +29,22 @@ The initialization playbook provides two services:
 -copy over an SSH public key
 -set up a passwordless sudo for the management account
 
-The playbook expects the SSH-key to be in a file called:
+The playbook expects the private SSH-key to be in a file called:
 deployment/private/id_deployment
+
+And its public counterpart in:
+deployment/managed/files/id_deployment.pub
+
+Before running the initialization playbook, it a very good idea to test ssh
+connectivity to each host. Especially conflicting SSH host keys will cause
+problems.
 
 As the SSH-key is not yet installed ansible needs to be told to use
 passwords:
 ansible-playbook -i production -u {remote_username} --ask-pass --ask-sudo-pass initial.yml
 
 Remote usernames can also be configured in the inventory file. See the
-supplied inventory for example
+supplied inventory for example.
 
 If you need to use different passwords for hosts, it is easiest to set
 them up on separate runs with separate inventory files
