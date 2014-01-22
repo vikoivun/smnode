@@ -1,2 +1,2 @@
 - name: "Create system user for Service Map frontend"
-  user: name=smbackend comment="Service Map system user" system=yes
+  user: name={{servicemap_system_user}} comment="Service Map system user" system=yes

@@ -1,6 +1,11 @@
 # Remote username for management
 deployment_user: deployment
 
+# Username (both system and database) for the service map
+# Note: it is not possible to change this after initial provisioning as the
+# database permissions will not change
+servicemap_system_user: smbackend
+
 # IP of the master node
 db_master_ip: 192.168.107.2
 # IP of the standby node

@@ -2,7 +2,7 @@
   sudo_user: postgres
   command: psql -x -c 'SELECT pg_is_in_recovery()'
   register: replication_running
-- debug: var=replication_running
+
 - include: setup_replication.yml
   sudo_user: postgres
   when: replication_running.stdout.find('pg_is_in_recovery | t') == -1

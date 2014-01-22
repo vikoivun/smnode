@@ -10,7 +10,9 @@
 # This sets up finnish locales for databases too
   - language-pack-fi
   - zabbix-agent
+# This is actually redundant, but perhaps it might help in the future?
   - postgresql
+  - postgresql-9.1-postgis
 # Ansible requires this, thus it is always needed
   - python-psycopg2
   - unattended-upgrades
