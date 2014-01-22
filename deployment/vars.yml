@@ -6,6 +6,9 @@ deployment_user: deployment
 # database permissions will not change
 servicemap_system_user: smbackend
 
+# Database name for the openstreetmap data
+osm_database: osmdata
+
 # IP of the master node
 db_master_ip: 192.168.107.2
 # IP of the standby node

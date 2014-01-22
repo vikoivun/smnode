@@ -17,6 +17,7 @@
   - dbmaster
   - geoserver
   - servicemap
+  - osm-import
 
 - hosts: sm_standbys
   gather_facts: no

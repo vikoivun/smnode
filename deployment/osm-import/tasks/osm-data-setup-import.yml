@@ -1,0 +1,15 @@
+- name: Creating database & user for OSM data
+  shell: DBOWNER={{ servicemap_system_user }} DBNAME={{ osm_database }} /usr/bin/install-postgis-osm-db.sh
+
+# This does not download new data, if the file already exists
+- name: Downloading OSM-data from download.geofabrik.de
+  get_url: url=http://download.geofabrik.de/europe/finland-latest.osm.pbf
+           dest=/home/{{ deployment_user }}/finland-latest.osm.pbf
+           mode=0444
+# This is not used at the moment, as the data should only be loaded once
+#  register: osm_download_status
+
+# TODO, make idempotent to the extent practical
+- name: Importing OSM data (this step will take considerably time)
+  sudo_user: "{{ servicemap_system_user }}"
+  shell: osm2pgsql -s -d {{ osm_database }} /home/{{ deployment_user }}/finland-latest.osm.pbf
