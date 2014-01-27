@@ -23,4 +23,4 @@
 - debug: var=osm_database_status
 
 - include: osm-data-setup-import.yml
-  when: osm_database_status.rc != 0
+  when: osm_database_status.rc != 0 or force_osm

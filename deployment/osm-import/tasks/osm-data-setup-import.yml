@@ -1,3 +1,15 @@
+- name: Remove existing database (if any)
+  sudo_user: postgres
+  postgresql_db: name={{ osm_database }}
+                 state=absent
+
+- name: Remove existing database user (if any)
+  sudo_user: postgres
+  postgresql_user: name={{ servicemap_system_user }}
+                   state=absent
+
+# This script does a sudo to postgres internally, as it has been originally
+# intended to run from Debian packaging
 - name: Creating database & user for OSM data
   shell: DBOWNER={{ servicemap_system_user }} DBNAME={{ osm_database }} /usr/bin/install-postgis-osm-db.sh
 
@@ -9,7 +21,6 @@
 # This is not used at the moment, as the data should only be loaded once
 #  register: osm_download_status
 
-# TODO, make idempotent to the extent practical
-- name: Importing OSM data (this step will take considerably time)
+- name: Importing OSM data (this step will take considerable time)
   sudo_user: "{{ servicemap_system_user }}"
   shell: osm2pgsql -s -d {{ osm_database }} /home/{{ deployment_user }}/finland-latest.osm.pbf

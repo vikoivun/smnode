@@ -1,0 +1,2 @@
+# Forcibly re-setup standby-configuration and resync data from master
+force_standby: False

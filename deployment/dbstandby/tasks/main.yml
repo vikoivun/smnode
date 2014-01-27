@@ -1,8 +1,12 @@
 - name: PostgreSQL-standby | Test whether replication is already setup
   sudo_user: postgres
   command: psql -x -c 'SELECT pg_is_in_recovery()'
+  ignore_errors: True
   register: replication_running
 
+# Failed replication setup will cause the previous step to fail completely
+# Thus the replication is re-setup if return code != 0
+# And the final option is to set force_standby, if these do not work
 - include: setup_replication.yml
   sudo_user: postgres
-  when: replication_running.stdout.find('pg_is_in_recovery | t') == -1
+  when: replication_running.stdout.find('pg_is_in_recovery | t') == -1 or replication_running.rc != 0 or force_standby

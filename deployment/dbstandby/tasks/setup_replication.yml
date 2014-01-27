@@ -1,5 +1,8 @@
 - name: PostgreSQL-standby | Copy passfile to standby server
   template: src=pgpass.j2 dest={{ postgresql_data_dir }}/../.pgpass mode=0400
+- name: Remove any remaining sync directories (from failed syncs)
+  command: rm -r {{ postgresql_data_dir }}/new_main
+           removes={{ postgresql_data_dir }}/new_main
 - name: PostgreSQL-standby | Sync data from master server
   shell: pg_basebackup -D {{ postgresql_data_dir }}/new_main -h {{ master_hostname }} -U {{ pg_replication_user }} -w
 - name: PostgreSQL-standby | Stop server for replication configuration
