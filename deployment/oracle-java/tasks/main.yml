@@ -9,3 +9,8 @@
   tags: java
   apt: pkg=oracle-{{ item }}-installer update-cache=yes state=latest
   with_items: java_versions
+
+- name: Set installed Java as the default version
+  tags: java
+  apt: pkg=oracle-{{ item }}-set-default update-cache=yes state=latest
+  with_items: java_versions
