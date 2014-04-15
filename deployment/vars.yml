@@ -6,15 +6,18 @@ deployment_user: deployment
 # database permissions will not change
 servicemap_system_user: smbackend
 
+# Name of the HTTP-virtualhost that service-backend will attach to
+servicemap_virtualhost: servicemap.hel.fi
+
 # Database name for the openstreetmap data
 osm_database: osmdata
 
 # IP of the master node
-db_master_ip: 192.168.107.2
+db_master_ip: 192.168.10.178
 # IP of the standby node
-db_standby_ip: 192.168.107.3
+db_standby_ip: 192.168.10.121
 # Hostname of the master (used for PostgreSQL-authentication)
-master_hostname: 192.168.107.2
+master_hostname: 192.168.10.178
 # Port the standby-nodes should connect to on the master
 master_port: 5432
 
@@ -35,3 +38,7 @@ geoserver_sha256: 93aa5669eda64fe5246771d85cf3962a781479d39028b63f9d39eff49ac696
 force_osm: False
 # Force standby setup
 force_standby: False
+# Cache used by osm2pgsql in MB, default is 800 MB. If there is enough
+# virtual memory available, increasing this should speed up the OSM import
+# considerably
+osm2pgsql_cache_size: 800

@@ -1,2 +1,118 @@
-- name: "Create system user for Service Map frontend"
+- name: Create system user for Service Map backend
   user: name={{servicemap_system_user}} comment="Service Map system user" system=yes
+
+- name: Create timestamp directory (used by data updates)
+  sudo_user: "{{ servicemap_system_user }}" 
+  command: mkdir /home/{{ servicemap_system_user }}/timestamps
+           creates=/home/{{ servicemap_system_user }}/timestamps
+
+- name: Add UbuntuGIS PPA (stable version for 12.04)
+  apt_repository: repo='ppa:ubuntugis/ppa' state=present
+#  apt_repository: repo='ppa:ubuntugis/ubuntugis-unstable' state=present
+
+- name: Install packages necessary for Service Map backend
+  apt: pkg={{ item }} state=present update-cache=yes cache_valid_time=86400
+  with_items:
+  - git-core
+  - postgresql-9.1
+  - postgresql-9.1-postgis
+# This might be a bit too much. 115MB after unpacking.
+  - python3-dev
+  - python-virtualenv
+  - libpq-dev
+  - gettext
+# Only used for development without PostgreSQL
+  - libspatialite3
+# Deployment
+  - uwsgi
+  - uwsgi-plugin-python3
+  - nginx
+
+- name: Clone the newest version of smbackend
+  sudo_user: "{{ servicemap_system_user }}"
+  git: repo=https://github.com/City-of-Helsinki/smbackend.git
+       dest=/home/{{ servicemap_system_user }}/smbackend
+
+- name: Copy in fixed requirements (smbackend has chronic broken reqs)
+  sudo_user: "{{ servicemap_system_user }}"
+  copy: src=smbackend_fixed_reqs dest=/home/{{ servicemap_system_user}}/smbackend/requirements.txt
+
+- name: Copy in Python3 virtualenv wrapper
+  copy: src=virtualenv-3.3 dest=/usr/local/bin/virtualenv-3.3 mode=0755
+
+- name: Remove the old virtualenv
+  sudo_user: "{{ servicemap_system_user }}"
+  command: rm -rf /home/{{ servicemap_system_user }}/smvenv
+           removes=/home/{{ servicemap_system_user }}/smvenv
+
+- name: Install the required dependencies
+  sudo_user: "{{ servicemap_system_user }}"
+# pip processing does not read the encoding header in Python files, thus
+# causing a failure if there are non-ASCII characters in setup.py, workaround
+# this by setting locale
+  environment:
+   LC_CTYPE: C.UTF-8
+  pip: requirements=/home/{{ servicemap_system_user }}/smbackend/requirements.txt
+       virtualenv=/home/{{ servicemap_system_user }}/smvenv
+       virtualenv_command=/usr/local/bin/virtualenv-3.3
+       virtualenv_site_packages=no
+       state=latest
+
+- name: Set up PostGRESQL database access for servicemap system user
+  sudo_user: postgres
+  postgresql_user: name={{ servicemap_system_user }}
+
+- name: Set up PostGRES database for servicemap
+  sudo_user: postgres
+  postgresql_db: name={{ servicemap_system_user }}
+                 owner={{ servicemap_system_user }}
+                 encoding=utf8
+                 template=template0
+                 lc_collate=fi_FI.UTF8
+                 lc_ctype=fi_FI.UTF8
+
+- name: Set up Postgis for the database
+  sudo_user: postgres
+  command: psql -d {{ servicemap_system_user }} -c "CREATE EXTENSION postgis"
+  ignore_errors: yes
+
+- name: Copy in Django configuration
+  sudo_user: "{{ servicemap_system_user }}"
+  template: src=django_config.j2
+            dest=/home/{{ servicemap_system_user }}/smbackend/local_settings.py
+
+- name: Running Django configuration shell script
+  sudo_user: "{{ servicemap_system_user }}"
+  script: django_setup.sh
+
+- name: Copy in uWSGI application configuration
+  template: src=uwsgi_appconfig.j2
+            dest=/etc/uwsgi/apps-available/smbackend.yml
+
+- name: Enable (symlink) uWSGI configuration
+  file: force=yes 
+        state=link
+        path=/etc/uwsgi/apps-enabled/smbackend.yml 
+        src=/etc/uwsgi/apps-available/smbackend.yml
+
+- name: Copy in nginx site configuration
+  template: src=nginx_site_config.j2
+            dest=/etc/nginx/sites-available/smbackend
+
+- name: Enable (symlink) nginx configuration
+  file: force=yes 
+        state=link
+        path=/etc/nginx/sites-enabled/smbackend
+        src=/etc/nginx/sites-available/smbackend
+
+- name: Remove nginx default server symlink  
+  file: path=/etc/nginx/sites-enabled/default
+        state=absent
+
+- name: Restart uWSGI
+  service: name=uwsgi state=restarted
+
+- name: Restart nginx
+  service: name=nginx state=restarted
+
+# NOTE: configuration of the application is still missing
