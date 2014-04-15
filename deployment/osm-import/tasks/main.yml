@@ -2,6 +2,9 @@
 - name: Adding PPA repository for Openstreetmap-tools
   apt_repository: repo='ppa:kakrueger/openstreetmap' state=present
 
+- name: Add UbuntuGIS PPA (unstable version for 13.10)
+  apt_repository: repo='ppa:ubuntugis/ubuntugis-unstable' state=present          
+
 # osm2pgsql brings (through "recommends") in openstreetmap-postgis-db-setup
 # which, by default, automatically creates a database and user. The script
 # is useful, but we want different defaults
@@ -13,6 +16,7 @@
   apt: pkg={{ item }} state=present update-cache=yes cache_valid_time=86400
   with_items:
   - osm2pgsql
+  - openstreetmap-postgis-db-setup
 
 - name: Testing for existence of OSM database
   sudo_user: postgres

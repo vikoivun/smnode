@@ -23,4 +23,8 @@
 
 - name: Importing OSM data (this step will take considerable time)
   sudo_user: "{{ servicemap_system_user }}"
-  shell: osm2pgsql -s -d {{ osm_database }} /home/{{ deployment_user }}/finland-latest.osm.pbf
+  shell: osm2pgsql -s -C {{ osm2pgsql_cache_size }} -d {{ osm_database }} /home/{{ deployment_user }}/finland-latest.osm.pbf
+
+- name: Updating time stamp for import
+  sudo_user: "{{ servicemap_system_user }}"
+  command: touch /home/{{ servicemap_system_user }}/timestamps/osm_import
