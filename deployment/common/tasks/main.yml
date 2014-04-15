@@ -6,8 +6,8 @@
   - language-pack-fi
   - zabbix-agent
 # This is actually redundant, but perhaps it might help in the future?
-  - postgresql
-  - postgresql-9.1-postgis
-# Ansible requires this, thus it is always needed
+#  - postgresql
+#  - postgresql-9.1-postgis
+# Ansible requires this for PostgreSQL configuration
   - python-psycopg2
   - unattended-upgrades
