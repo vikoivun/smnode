@@ -16,6 +16,19 @@ vars.yml:	configuration for the scripts, currently IPs defined in
 initial.yml	playbook: sets the hosts up for management
 site.yml	playbook: sets up the actual services for Service Map
 
+NOTE: LOCALE PROBLEMS
+---------------------
+
+Unfortunately many installation scripts in Debian and Ubuntu packages
+depend on correctly set locale. In particular, PostgreSQL UTF-8 support
+behaves differently if the package is not installed with UTF-8 locale. To
+make matters worse, Ansible modules always set the locale to "C", which is
+not a UTF-8 locale.
+
+This can be fixed by setting:
+export ANSIBLE_MODULE_LANG="en_US.UTF-8"
+before running any Ansible commands.
+
 Initial use
 ----
 Hosts that are going to be managed need to have, at minimum, SSH-server
@@ -35,9 +48,10 @@ deployment/private/id_deployment
 And its public counterpart in:
 deployment/managed/files/id_deployment.pub
 
-Before running the initialization playbook, it a very good idea to test ssh
-connectivity to each host. Especially conflicting SSH host keys will cause
-problems.
+*NOTE!* Before running the initialization playbook, it a very good idea to
+test ssh connectivity to each host. Especially unknown SSH host keys
+will cause problems and obscure error message from Ansible. Remember to use
+the exact same hostname as in your inventory (domain included!).
 
 As the SSH-key is not yet installed ansible needs to be told to use
 passwords:
