@@ -1,0 +1,10 @@
+uwsgi:
+  chdir: /home/{{ servicemap_system_user }}/smbackend
+  module: "smbackend.wsgi:application"
+  # Change this to pick appropriate settings
+  env: DJANGO_SETTINGS_MODULE=smbackend.settings
+  virtualenv: /home/{{ servicemap_system_user }}/smvenv
+  socket: 127.0.0.1:8000
+  processes: 4
+  threads: 2
+  uid: {{ servicemap_system_user }}
